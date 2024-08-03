@@ -1,0 +1,33 @@
+from fastapi import FastAPI,Form
+import mysql.connector
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+conn = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="root",
+    database="filmdb",
+    port="3306"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+
+@app.get("/")
+def root():
+    return {"message":"Hello World"}
+
+
+@app.get("/get_films")
+def get_films():
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM films")
+    records = cursor.fetchall()
+    return records
